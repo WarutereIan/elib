@@ -1,17 +1,21 @@
+"use client";
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
 
-const SignUpPage = () => {
+const SchoolSignUpPage = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    school: "",
+    schoolName: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
     firstName: "",
@@ -25,21 +29,14 @@ const SignUpPage = () => {
     let isValid = true;
     const newErrors = { ...errors };
 
-    if (formData.firstName.trim().length < 2) {
+    if (formData.schoolName.trim().length < 2) {
       newErrors.firstName = "First name must be at least 2 characters";
       isValid = false;
     } else {
       newErrors.firstName = "";
     }
 
-    if (formData.lastName.trim().length < 2) {
-      newErrors.lastName = "Last name must be at least 2 characters";
-      isValid = false;
-    } else {
-      newErrors.lastName = "";
-    }
-
-    if (formData.school.trim().length < 2) {
+    if (formData.email.trim().length < 2) {
       newErrors.school = "School name is required";
       isValid = false;
     } else {
@@ -69,6 +66,7 @@ const SignUpPage = () => {
     if (validateForm()) {
       // Handle registration logic here
       console.log("Registration attempted with:", formData);
+      navigate("/home");
     }
   };
 
@@ -100,30 +98,11 @@ const SignUpPage = () => {
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-semibold mb-8 text-center">
-              Create Account
+              Create School Account
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="firstName" className="block text-gray-600">
-                    First Name
-                  </label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="rounded-full"
-                    required
-                  />
-                  {errors.firstName && (
-                    <span className="text-red-500 text-sm">
-                      {errors.firstName}
-                    </span>
-                  )}
-                </div>
-
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <label htmlFor="lastName" className="block text-gray-600">
                     Last Name
                   </label>
@@ -140,17 +119,36 @@ const SignUpPage = () => {
                       {errors.lastName}
                     </span>
                   )}
-                </div>
+                </div> */}
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="firstName" className="block text-gray-600">
+                  School Name
+                </label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={formData.schoolName}
+                  onChange={handleChange}
+                  className="rounded-full"
+                  required
+                />
+                {errors.firstName && (
+                  <span className="text-red-500 text-sm">
+                    {errors.firstName}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="school" className="block text-gray-600">
-                  School
+                  Email
                 </label>
                 <Input
                   id="school"
                   name="school"
-                  value={formData.school}
+                  value={formData.email}
                   onChange={handleChange}
                   className="rounded-full"
                   required
@@ -210,6 +208,9 @@ const SignUpPage = () => {
                 Sign Up
               </Button>
             </form>
+            <p>
+              Already registered? <a href="/"> Sign In</a>
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -217,4 +218,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SchoolSignUpPage;

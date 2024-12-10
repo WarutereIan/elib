@@ -1,7 +1,6 @@
 import { connect } from "mongoose";
 import { config } from "./config";
 
-
 export const connectDB = async () => {
   console.log(`- - -`.repeat(10));
   try {
@@ -11,7 +10,7 @@ export const connectDB = async () => {
       connectTimeoutMS: 60000,
       socketTimeoutMS: 60000,
     };
-    const db = await connect(config.MONGO_URI, options);
+    const db = await connect("mongodb://localhost:27017", options);
     console.log("Connected to MongoDB ✅✅✅");
     return db;
   } catch (err: any) {
@@ -19,5 +18,3 @@ export const connectDB = async () => {
     process.exit(1);
   }
 };
-
-

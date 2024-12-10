@@ -8,6 +8,7 @@ import {
 import { validateRequest } from "../../middlewares/validate-request";
 import {
   getBookStudent,
+  getBooksStudent,
   studentLogin,
   studentSignUp,
 } from "../../controllers/student";
