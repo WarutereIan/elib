@@ -75,12 +75,14 @@ export const deleteBook = async (req: Request, res: Response) => {
 //update school
 export const updateSchool = async (req: Request, res: Response) => {
   try {
-    let { name, has_paid, school_id } = req.body;
+    let { school_id } = req.body;
+
+    let school = await School.findOne({ id: school_id });
 
     let updatedSchool = await School.updateOne(
       { id: school_id },
       {
-        has_paid: has_paid,
+        has_paid: !school?.has_paid,
       }
     );
 

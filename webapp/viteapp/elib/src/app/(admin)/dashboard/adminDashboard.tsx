@@ -20,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Pen, Trash2, BookOpen, School, Plus } from "lucide-react";
 import FileUploader from "../../../components/fileUploader";
 import axios from "axios";
-import { log } from "console";
 
 const AdminDashboard = () => {
   const [schools, setSchools] = useState<any[]>([]);
@@ -60,12 +59,63 @@ const AdminDashboard = () => {
     getSchools().then();
   }, []);
 
-  const handleEdit = (id) => {
+  const handleEdit = async (id) => {
     console.log("Edit school:", id);
+    //will toggle payment status
+    const url = "http://localhost:5000/admin/edit-school";
+
+    try {
+      const request = {
+        method: "post",
+        data: id,
+        url: url,
+      };
+
+      const response = await axios(request);
+      await getSchools();
+    } catch (error) {
+      console.log(error);
+      alert(error);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDeleteSchool = async (id) => {
     console.log("Delete school:", id);
+    const url = "http://localhost:5000/admin/delete-school";
+
+    try {
+      const request = {
+        method: "post",
+        data: id,
+        url: url,
+      };
+
+      const response = await axios(request);
+
+      await getSchools();
+    } catch (error) {
+      console.log(error);
+      alert(error);
+    }
+  };
+  const handleDeleteBook = async (id) => {
+    console.log("Delete school:", id);
+    const url = "http://localhost:5000/admin/delete-book";
+
+    try {
+      const request = {
+        method: "delete",
+        data: id,
+        url: url,
+      };
+
+      const response = await axios(request);
+
+      await getBooks();
+    } catch (error) {
+      console.log(error);
+      alert(error);
+    }
   };
 
   return (
@@ -97,7 +147,14 @@ const AdminDashboard = () => {
 
         {/* Logout Button */}
         <Button className="mt-auto w-full bg-amber-500 hover:bg-amber-600 text-white rounded-full">
-          <a href="/">Log Out</a>
+          <a
+            href="/"
+            onClick={() => {
+              localStorage.setItem("adm_token", "");
+            }}
+          >
+            Log Out
+          </a>
         </Button>
       </div>
 
@@ -142,7 +199,7 @@ const AdminDashboard = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleEdit(school.id)}
+                        onClick={() => handleEdit(school._id)}
                         className="text-blue-500 hover:text-blue-700"
                       >
                         <Pen className="h-4 w-4" />
@@ -150,7 +207,7 @@ const AdminDashboard = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(school.id)}
+                        onClick={() => handleDeleteSchool(school._id)}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -201,7 +258,7 @@ const AdminDashboard = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(school.id)}
+                        onClick={() => handleDeleteBook(book._id)}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />

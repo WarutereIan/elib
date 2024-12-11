@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SchoolManagement = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -30,6 +31,8 @@ const SchoolManagement = () => {
   const token = localStorage.getItem("sch_token");
 
   console.log("token", token);
+
+  const navigate = useNavigate();
 
   const getstudents = async () => {
     try {
@@ -70,9 +73,44 @@ const SchoolManagement = () => {
     getTeachers().then();
   }, []);
 
-  const handleDelete = (teacherId) => {
-    if (confirm("Are you sure you want to delete this teacher?")) {
-      setTeachers(teachers.filter((teacher) => teacher.id !== teacherId));
+  const handleDeleteTeacher = async (teacherId) => {
+    if (true) {
+      const url = "http://localhost:5000/admin/delete-teacher";
+
+      try {
+        const request = {
+          method: "delete",
+          data: teacherId,
+          url: url,
+        };
+
+        const response = await axios(request);
+
+        await getTeachers();
+      } catch (error) {
+        console.log(error);
+        alert(error);
+      }
+    }
+  };
+  const handleDeleteStudent = async (studentId) => {
+    if (true) {
+      const url = "http://localhost:5000/admin/delete-student";
+
+      try {
+        const request = {
+          method: "delete",
+          data: studentId,
+          url: url,
+        };
+
+        const response = await axios(request);
+
+        await getstudents();
+      } catch (error) {
+        console.log(error);
+        alert(error);
+      }
     }
   };
 
@@ -114,7 +152,13 @@ const SchoolManagement = () => {
           </button>
         </nav>
 
-        <button className="mt-auto bg-amber-400 text-black p-2 rounded">
+        <button
+          className="mt-auto bg-amber-400 text-black p-2 rounded"
+          onClick={() => {
+            localStorage.setItem("sch_token", "");
+            navigate("/");
+          }}
+        >
           Log Out
         </button>
       </div>
@@ -142,7 +186,7 @@ const SchoolManagement = () => {
                 </thead>
                 <tbody>
                   {teachers.map((teacher) => (
-                    <tr key={teacher.id} className="border-t">
+                    <tr key={teacher._id} className="border-t">
                       <td className="p-4">{teacher._id}</td>
                       <td className="p-4">{teacher.name}</td>
                       <td className="p-4">{teacher.tsc_no}</td>
@@ -152,7 +196,7 @@ const SchoolManagement = () => {
                             size="sm"
                             variant="ghost"
                             className="text-red-500 hover:text-red-700"
-                            onClick={() => handleDelete(teacher.id)}
+                            onClick={() => handleDeleteTeacher(teacher.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -183,7 +227,7 @@ const SchoolManagement = () => {
                 </thead>
                 <tbody>
                   {students.map((teacher) => (
-                    <tr key={teacher.id} className="border-t">
+                    <tr key={teacher._id} className="border-t">
                       <td className="p-4">{teacher._id}</td>
                       <td className="p-4">{teacher.name}</td>
                       <td className="p-4">{teacher.adm_no}</td>
@@ -228,7 +272,7 @@ const SchoolManagement = () => {
                             size="sm"
                             variant="ghost"
                             className="text-red-500 hover:text-red-700"
-                            onClick={() => handleDelete(teacher.id)}
+                            onClick={() => handleDeleteStudent(teacher._id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

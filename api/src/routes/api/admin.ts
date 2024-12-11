@@ -100,6 +100,7 @@ router.delete("/delete-book", validateRequest, deleteBook);
 router.post("/update-school", validateRequest, updateSchool);
 router.post("/delete-school", validateRequest, deleteSchool);
 router.get("/get-schools", validateRequest, getSchools);
+router.post("/edit-school", validateRequest, updateSchool);
 
 //add login and sign up functions
 router.post("/signup", adminSignUp);

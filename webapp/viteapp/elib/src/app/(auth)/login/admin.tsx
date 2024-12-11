@@ -53,7 +53,7 @@ const AdminLoginPage = () => {
           </div>
           <div className="flex justify-center">
             <img
-              src="/api/placeholder/150/150"
+              src="/public/"
               alt="KICD Logo"
               className="w-32 h-32"
             />

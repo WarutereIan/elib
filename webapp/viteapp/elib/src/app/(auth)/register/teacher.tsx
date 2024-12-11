@@ -185,12 +185,12 @@ const TeacherSignUpPage = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <label htmlFor="school" className="block text-gray-600">
+                <label htmlFor="tscNo" className="block text-gray-600">
                   TSC No.
                 </label>
                 <Input
-                  id="school"
-                  name="school"
+                  id="tscNo"
+                  name="tscNo"
                   value={formData.tscNo}
                   onChange={handleChange}
                   className="rounded-full"

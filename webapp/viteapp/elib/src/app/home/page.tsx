@@ -9,10 +9,13 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ELibraryApp = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const navigate = useNavigate();
 
   const categories = ["All", "Mathematics", "Languages", "Sciences"];
 
@@ -78,7 +81,13 @@ const ELibraryApp = () => {
           ))}
         </nav>
 
-        <button className="mt-auto bg-amber-400 text-black p-2 rounded">
+        <button
+          className="mt-auto bg-amber-400 text-black p-2 rounded"
+          onClick={() => {
+            localStorage.setItem("sch_token", "");
+            navigate("/");
+          }}
+        >
           Log Out
         </button>
       </div>
