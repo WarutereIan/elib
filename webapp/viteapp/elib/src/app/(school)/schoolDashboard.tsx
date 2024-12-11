@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Newspaper } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { usePDF } from "react-to-pdf";
 
 const SchoolManagement = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -134,6 +135,14 @@ const SchoolManagement = () => {
     }
   };
 
+  const { toPDF: pdfGenTeachers, targetRef: targetRefTeachers } = usePDF({
+    filename: "exported-data-teachers.pdf",
+  });
+
+  const { toPDF: pdfGenStudents, targetRef: targetRefStudents } = usePDF({
+    filename: "exported-data-students.pdf",
+  });
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -172,9 +181,17 @@ const SchoolManagement = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Teachers</CardTitle>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-red-500 hover:text-red-700"
+              onClick={() => pdfGenTeachers()}
+            >
+              <Newspaper className="h-4 w-4" />
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            <div ref={targetRefTeachers} className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-100">
                   <tr>
@@ -213,9 +230,17 @@ const SchoolManagement = () => {
         <Card className="mt-5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Students</CardTitle>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-red-500 hover:text-red-700"
+              onClick={() => pdfGenStudents()}
+            >
+              <Newspaper className="h-4 w-4" />
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            <div ref={targetRefStudents} className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-100">
                   <tr>

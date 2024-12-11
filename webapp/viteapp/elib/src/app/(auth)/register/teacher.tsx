@@ -76,7 +76,7 @@ const TeacherSignUpPage = () => {
     e.preventDefault();
     if (validateForm()) {
       // Handle registration logic here
-      const url = "http://localhost:5000/user/school-signup";
+      const url = "http://localhost:5000/user/teacher-signup";
 
       try {
         const signupRequest = {

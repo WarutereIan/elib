@@ -117,6 +117,8 @@ export const deleteSchool = async (req: Request, res: Response) => {
   }
 };
 
+
+
 //add log in and sign up functions
 //signup
 export const adminSignUp = async (req: Request, res: Response) => {

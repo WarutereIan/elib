@@ -52,11 +52,7 @@ const AdminLoginPage = () => {
             <h1 className="text-2xl font-bold text-white">KICD_ELIBRARY</h1>
           </div>
           <div className="flex justify-center">
-            <img
-              src="/public/"
-              alt="KICD Logo"
-              className="w-32 h-32"
-            />
+            <img src="/public/" alt="KICD Logo" className="w-32 h-32" />
           </div>
         </div>
 
@@ -69,14 +65,14 @@ const AdminLoginPage = () => {
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label htmlFor="id" className="block text-gray-600">
-                    ID
+                  <label htmlFor="email" className="block text-gray-600">
+                    Email
                   </label>
                   <Input
-                    id="id"
-                    name="id"
+                    id="email"
+                    name="email"
                     type="text"
-                    value={credentials.id}
+                    value={credentials.email}
                     onChange={handleChange}
                     className="w-full rounded-full"
                     required
