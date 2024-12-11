@@ -1,15 +1,20 @@
 import { Request, Response, Router } from "express";
 import { validateRequest } from "../../middlewares/validate-request";
 import {
+  adminLogin,
+  adminSignUp,
   deleteBook,
   deleteSchool,
   editBook,
+  getSchools,
   updateSchool,
   uploadBook,
 } from "../../controllers/admin";
 import { model } from "mongoose";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+import { Book } from "../../models/Book";
 
 const router: any = Router();
 
@@ -50,59 +55,38 @@ const upload = multer({
 
 router.post(
   "/upload-book",
-  validateRequest,
+
   upload.single("file"),
   async (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const { bookName, category, subject } = req.body;
+    const { bookName, category } = req.body;
 
     // Create covers directory if not exists
     const coversDir = path.join(__dirname, "uploads", "covers");
-    await fs.mkdir(coversDir, { recursive: true });
-
-    // Extract or generate cover
-    let coverPath = null;
-    try {
-      coverPath = await BookCoverExtractor.extractCover(
-        req.file.path,
-        coversDir
-      );
-
-      // If no cover found, generate placeholder
-      if (!coverPath) {
-        coverPath = await BookCoverExtractor.generatePlaceholderCover(
-          bookName,
-          coversDir
-        );
-      }
-    } catch (coverError) {
-      console.error("Cover extraction error:", coverError);
-      // Fallback to placeholder if extraction fails
-      coverPath = await BookCoverExtractor.generatePlaceholderCover(
-        bookName,
-        coversDir
-      );
-    }
+    await fs.mkdir(coversDir, { recursive: true }, () => {});
 
     // Book metadata object
     const bookMetadata = {
       bookName,
       category,
-      subject,
       filename: req.file.filename,
       filePath: req.file.path,
-      coverPath: coverPath ? path.basename(coverPath) : null,
       uploadedAt: new Date(),
     };
 
-     console.log("Book Metadata:", bookMetadata);
-
+    console.log("Book Metadata:", bookMetadata);
 
     //save book metadata to db
-    
+    let new_book = await Book.create({
+      name: bookName,
+      category: category,
+      filename: req.file.filename,
+      filePath: req.file.path,
+      uploadedAt: new Date(),
+    });
 
     res.json({
       message: "File uploaded successfully",
@@ -115,7 +99,10 @@ router.post("/edit-book", validateRequest, editBook);
 router.delete("/delete-book", validateRequest, deleteBook);
 router.post("/update-school", validateRequest, updateSchool);
 router.post("/delete-school", validateRequest, deleteSchool);
+router.get("/get-schools", validateRequest, getSchools);
 
 //add login and sign up functions
+router.post("/signup", adminSignUp);
+router.post("/login", adminLogin);
 
 module.exports = router;

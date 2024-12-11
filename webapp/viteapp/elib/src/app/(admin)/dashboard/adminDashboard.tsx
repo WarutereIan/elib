@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -19,15 +19,46 @@ import {
 import { Input } from "@/components/ui/input";
 import { Pen, Trash2, BookOpen, School, Plus } from "lucide-react";
 import FileUploader from "../../../components/fileUploader";
+import axios from "axios";
+import { log } from "console";
 
 const AdminDashboard = () => {
-  const [schools, setSchools] = useState([
-    { id: "001", name: "Nairobi School", paymentStatus: "Successful" },
-    { id: "002", name: "Light Academy", paymentStatus: "Unsuccessful" },
-    { id: "003", name: "Kenya High", paymentStatus: "Successful" },
-    { id: "004", name: "Kahuhia Girls", paymentStatus: "Successful" },
-    { id: "005", name: "Lenana School", paymentStatus: "Unsuccessful" },
-  ]);
+  const [schools, setSchools] = useState<any[]>([]);
+  const [books, setBooks] = useState<any[]>([]);
+
+  //getBookMetadata
+  let url = "http://localhost:5000/user/get-books";
+
+  const getBooks = async () => {
+    try {
+      const response = await axios.get(url);
+
+      setBooks(response.data.books);
+
+      return response.data.books;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSchools = async () => {
+    let url = "http://localhost:5000/admin/get-schools";
+
+    try {
+      const response = await axios.get(url);
+
+      setSchools(response.data.schools);
+
+      return response.data.schools;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getBooks().then();
+    getSchools().then();
+  }, []);
 
   const handleEdit = (id) => {
     console.log("Edit school:", id);
@@ -66,7 +97,7 @@ const AdminDashboard = () => {
 
         {/* Logout Button */}
         <Button className="mt-auto w-full bg-amber-500 hover:bg-amber-600 text-white rounded-full">
-          Log Out
+          <a href="/">Log Out</a>
         </Button>
       </div>
 
@@ -93,18 +124,18 @@ const AdminDashboard = () => {
               </TableHeader>
               <TableBody>
                 {schools.map((school) => (
-                  <TableRow key={school.id}>
-                    <TableCell>{school.id}</TableCell>
+                  <TableRow key={school._id}>
+                    <TableCell>{school._id}</TableCell>
                     <TableCell>{school.name}</TableCell>
                     <TableCell>
                       <span
                         className={`px-3 py-1 rounded-full text-sm ${
-                          school.paymentStatus === "Successful"
+                          school.has_paid
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {school.paymentStatus}
+                        {school.has_paid ? "Successful" : "Unsuccessful"}
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
@@ -154,37 +185,19 @@ const AdminDashboard = () => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-100">
-                  <TableHead>School ID</TableHead>
-                  <TableHead>School Name</TableHead>
-                  <TableHead>Payment Status</TableHead>
+                  <TableHead>Book ID</TableHead>
+                  <TableHead>Book Name</TableHead>
+                  <TableHead>Book Category</TableHead>
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {schools.map((school) => (
-                  <TableRow key={school.id}>
-                    <TableCell>{school.id}</TableCell>
-                    <TableCell>{school.name}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm ${
-                          school.paymentStatus === "Successful"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {school.paymentStatus}
-                      </span>
-                    </TableCell>
+                {books.map((book) => (
+                  <TableRow key={book._id}>
+                    <TableCell>{book._id}</TableCell>
+                    <TableCell>{book.name}</TableCell>
+                    <TableCell>{book.category}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(school.id)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <Pen className="h-4 w-4" />
-                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -201,13 +214,6 @@ const AdminDashboard = () => {
           </div>
         </main>
       </div>
-
-      {/* Footer Logo */}
-      <img
-        src="/api/placeholder/150/150"
-        alt="KICD Logo"
-        className="fixed bottom-4 right-4 w-24 h-24"
-      />
     </div>
   );
 };

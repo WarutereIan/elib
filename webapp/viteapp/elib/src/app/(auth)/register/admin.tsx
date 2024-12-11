@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AdminSignUpPage = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    school: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
@@ -21,7 +22,7 @@ const AdminSignUpPage = () => {
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
-    school: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
@@ -44,11 +45,11 @@ const AdminSignUpPage = () => {
       newErrors.lastName = "";
     }
 
-    if (formData.school.trim().length < 2) {
-      newErrors.school = "School name is required";
+    if (formData.email.trim().length < 2) {
+      newErrors.email = "email is required";
       isValid = false;
     } else {
-      newErrors.school = "";
+      newErrors.email = "";
     }
 
     if (formData.password.length < 8) {
@@ -69,12 +70,27 @@ const AdminSignUpPage = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       // Handle registration logic here
-      console.log("Registration attempted with:", formData);
-      navigate("/home");
+      const url = "http://localhost:5000/admin/signup";
+      try {
+        const signupRequest = {
+          method: "post",
+          data: formData,
+          url: url,
+        };
+
+        const response = await axios(signupRequest);
+        console.log(response.data);
+        //store token in local stoage
+        localStorage.setItem("adm_token", response.data.token);
+        navigate("/admin/dashboard");
+      } catch (error: any) {
+        console.log(error);
+        alert(error.response.data.msg);
+      }
     }
   };
 
@@ -150,19 +166,19 @@ const AdminSignUpPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="school" className="block text-gray-600">
-                  School
+                <label htmlFor="email" className="block text-gray-600">
+                  Email
                 </label>
                 <Input
-                  id="school"
-                  name="school"
-                  value={formData.school}
+                  id="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
                   className="rounded-full"
                   required
                 />
-                {errors.school && (
-                  <span className="text-red-500 text-sm">{errors.school}</span>
+                {errors.email && (
+                  <span className="text-red-500 text-sm">{errors.email}</span>
                 )}
               </div>
 

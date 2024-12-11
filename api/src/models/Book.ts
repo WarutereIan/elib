@@ -3,9 +3,10 @@ import { IBook } from "../types/IBooks";
 
 const BookSchema = new Schema<IBook>({
   name: String,
-  url: String,
-  img: String,
-  publisher: String,
+  filename: String,
+  filepath: String,
+  uploadedAt: String,
+  category: String,
   is_guide: Boolean,
 });
 

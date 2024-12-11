@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { log } from "console";
 
 const SchoolSignUpPage = () => {
   const [formData, setFormData] = useState({
-    schoolName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -29,7 +31,7 @@ const SchoolSignUpPage = () => {
     let isValid = true;
     const newErrors = { ...errors };
 
-    if (formData.schoolName.trim().length < 2) {
+    if (formData.name.trim().length < 2) {
       newErrors.firstName = "First name must be at least 2 characters";
       isValid = false;
     } else {
@@ -61,12 +63,28 @@ const SchoolSignUpPage = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       // Handle registration logic here
-      console.log("Registration attempted with:", formData);
-      navigate("/home");
+      const url = "http://localhost:5000/user/school-signup";
+
+      try {
+        const signupRequest = {
+          method: "post",
+          data: formData,
+          url: url,
+        };
+
+        const response = await axios(signupRequest);
+        console.log(response.data);
+        //store token in local stoage
+        localStorage.setItem("school_token", response.data.token);
+        navigate("/school/dashboard");
+      } catch (error: any) {
+        console.log(error);
+        alert(error.response.data.msg);
+      }
     }
   };
 
@@ -123,13 +141,13 @@ const SchoolSignUpPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="firstName" className="block text-gray-600">
+                <label htmlFor="name" className="block text-gray-600">
                   School Name
                 </label>
                 <Input
-                  id="firstName"
-                  name="firstName"
-                  value={formData.schoolName}
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   className="rounded-full"
                   required
@@ -142,12 +160,12 @@ const SchoolSignUpPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="school" className="block text-gray-600">
+                <label htmlFor="email" className="block text-gray-600">
                   Email
                 </label>
                 <Input
-                  id="school"
-                  name="school"
+                  id="email"
+                  name="email"
                   value={formData.email}
                   onChange={handleChange}
                   className="rounded-full"

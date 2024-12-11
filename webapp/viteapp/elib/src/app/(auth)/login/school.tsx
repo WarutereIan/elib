@@ -3,20 +3,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SchoolLoginPage = () => {
   const [credentials, setCredentials] = useState({
-    id: "",
+    name: "",
     password: "",
   });
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempted with:", credentials);
-    navigate("/home");
+    // Handle registration logic here
+    const url = "http://localhost:5000/user/school-login";
+
+    try {
+      const signupRequest = {
+        method: "post",
+        data: credentials,
+        url: url,
+      };
+
+      const response = await axios(signupRequest);
+      console.log(response.data);
+      //store token in local stoage
+      localStorage.setItem("sch_token", response.data.token);
+      navigate("/school/dashboard");
+    } catch (error: any) {
+      console.log(error);
+      alert(error.response.data.msg);
+    }
   };
 
   const handleChange = (e) => {
@@ -52,14 +69,14 @@ const SchoolLoginPage = () => {
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label htmlFor="id" className="block text-gray-600">
-                    ID
+                  <label htmlFor="name" className="block text-gray-600">
+                    Name
                   </label>
                   <Input
-                    id="id"
-                    name="id"
+                    id="name"
+                    name="name"
                     type="text"
-                    value={credentials.id}
+                    value={credentials.name}
                     onChange={handleChange}
                     className="w-full rounded-full"
                     required

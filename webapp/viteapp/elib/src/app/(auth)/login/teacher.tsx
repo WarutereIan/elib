@@ -3,20 +3,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const TeacherLoginPage = () => {
   const [credentials, setCredentials] = useState({
-    id: "",
+    tsc_no: "",
     password: "",
   });
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempted with:", credentials);
-    navigate("/home");
+    // Handle registration logic here
+    const url = "http://localhost:5000/user/teacher-login";
+
+    try {
+      const signupRequest = {
+        method: "post",
+        data: credentials,
+        url: url,
+      };
+
+      const response = await axios(signupRequest);
+      console.log(response.data);
+      //store token in local stoage
+      localStorage.setItem("token", response.data.token);
+      navigate("/home");
+    } catch (error: any) {
+      console.log(error);
+      alert(error.response.data.msg);
+    }
   };
 
   const handleChange = (e) => {

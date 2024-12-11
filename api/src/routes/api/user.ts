@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import {
   getBookTeacher,
   getBooksTeacher,
@@ -22,6 +22,8 @@ import {
   schoolLogin,
   schoolSignUp,
 } from "../../controllers/school";
+import { validateToken } from "../../middlewares/auth";
+import path from "path";
 
 const router = Router();
 
@@ -33,15 +35,51 @@ router.post("/teacher-login", teacherLogin);
 router.post("/teacher-signup", teacherSignUp);
 
 //student routes
-router.get("/get-book/:book_id", validateRequest, getBookStudent);
-router.get("/get-books", validateRequest, getBooksStudent);
+router.get(
+  "/get-book/:filename",
+  validateRequest,
+  (req: Request, res: Response) => {
+    const filename = req.params.filename;
+    console.log(filename);
+
+    ("api/uploads");
+
+    const filePath = path.join(__dirname, "../../../", "uploads", filename);
+
+    console.log(filePath);
+
+    // Determine content type based on file extension
+    const ext = path.extname(filename).toLowerCase();
+    let contentType = "application/octet-stream";
+
+    switch (ext) {
+      case ".pdf":
+        contentType = "application/pdf";
+        break;
+      case ".doc":
+        contentType = "application/msword";
+        break;
+      case ".docx":
+        contentType =
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        break;
+    }
+
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+
+    res.sendFile(filePath);
+  }
+);
+
+router.get("/get-books", getBooksStudent);
 
 router.post("/student-signup", studentSignUp);
 router.post("/student-login", studentLogin);
 
 //school routes
-router.get("/getTeachers", validateRequest, getTeachers);
-router.get("/getStudents", validateRequest, getStudents);
+router.get("/getTeachers", validateRequest, validateToken, getTeachers);
+router.get("/getStudents", validateRequest, validateToken, getStudents);
 
 router.post("/school-login", schoolLogin);
 router.post("/school-signup", schoolSignUp);

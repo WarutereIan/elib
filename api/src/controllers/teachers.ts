@@ -49,12 +49,12 @@ export const getBookTeacher = async (req: Request, res: Response) => {
 //signup
 export const teacherSignUp = async (req: Request, res: Response) => {
   try {
-    let { name, tsc_no, teacher_no, password, school_id } = req.body;
+    let { firstName, lastName, tsc_no, password, school } = req.body;
     let teacher = await Teacher.create({
-      name,
+      name: firstName + lastName,
       tsc_no,
-      school_id,
-      teacher_no,
+      school_id: school,
+      teacher_no: "0",
       password,
     });
 

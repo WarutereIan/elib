@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -8,6 +8,7 @@ import {
   SidebarContent,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import axios from "axios";
 
 const ELibraryApp = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -15,7 +16,7 @@ const ELibraryApp = () => {
 
   const categories = ["All", "Mathematics", "Languages", "Sciences"];
 
-  const books = [
+  /*   const books = [
     { id: 1, title: "Mathematics Form 1", category: "Mathematics", form: 1 },
     { id: 2, title: "Mathematics Form 2", category: "Mathematics", form: 2 },
     { id: 3, title: "Mathematics Form 3", category: "Mathematics", form: 3 },
@@ -24,16 +25,37 @@ const ELibraryApp = () => {
     { id: 6, title: "English Form 2", category: "Languages", form: 2 },
     { id: 7, title: "English Form 3", category: "Languages", form: 3 },
     { id: 8, title: "English Form 4", category: "Languages", form: 4 },
-  ];
+  ]; */
+
+  const [books, setBooks] = useState<any[]>([]);
 
   const filteredBooks = books.filter((book) => {
     const matchesCategory =
       selectedCategory === "All" || book.category === selectedCategory;
-    const matchesSearch = book.title
+    const matchesSearch = book.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  //getBookMetadata
+  let url = "http://localhost:5000/user/get-books";
+
+  const getBooks = async () => {
+    try {
+      const response = await axios.get(url);
+
+      setBooks(response.data.books);
+
+      return response.data.books;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getBooks().then();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -91,20 +113,23 @@ const ELibraryApp = () => {
         {/* Books Grid */}
         <div className="grid grid-cols-4 gap-6">
           {filteredBooks.map((book) => (
-            <Card key={book.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-center">{book.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gray-200 h-40 mb-4 rounded flex items-center justify-center">
-                  {/* Book cover placeholder */}
-                  <span className="text-gray-500">Book Cover</span>
-                </div>
-                <p className="text-center text-sm text-gray-600">
-                  Form {book.form}
-                </p>
-              </CardContent>
-            </Card>
+            <a href={`http://localhost:5000/user/get-book/${book.filename}`}>
+              <Card
+                key={book._id}
+                className="hover:shadow-lg transition-shadow"
+              >
+                <CardHeader>
+                  <CardTitle className="text-center">{book.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-gray-200 h-40 mb-4 rounded flex items-center justify-center">
+                    {/* Book cover placeholder */}
+                    <span className="text-gray-500">Book Cover</span>
+                  </div>
+                  <p className="text-center text-sm text-gray-600"></p>
+                </CardContent>
+              </Card>
+            </a>
           ))}
         </div>
       </div>

@@ -6,6 +6,7 @@ import hpp from "hpp";
 import { logger } from "./logger";
 import expressRateLimit from "express-rate-limit";
 import cors from "cors";
+import path from "path";
 
 const xss = require("xss-clean");
 
@@ -44,4 +45,7 @@ export const configureMiddleware = (app: Express) => {
 
   //enable cors
   app.use(cors());
+
+  // Serve static files from uploads directory
+  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 };

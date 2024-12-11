@@ -4,6 +4,10 @@ import { Book } from "../models/Book";
 import { Teacher } from "../models/Teacher";
 import { Student } from "../models/Student";
 import { School } from "../models/School";
+import { sign } from "jsonwebtoken";
+import { config } from "../config/config";
+import { Admin } from "../models/Admin";
+import { Password } from "../helpers/password";
 
 //add book
 
@@ -87,6 +91,16 @@ export const updateSchool = async (req: Request, res: Response) => {
   }
 };
 
+export const getSchools = async (req: Request, res: Response) => {
+  try {
+    let schools = await School.find();
+    return res.json({ success: true, schools });
+  } catch (error: any) {
+    console.error(error.message);
+    return res.status(500).send("Internal server error");
+  }
+};
+
 //delete school
 export const deleteSchool = async (req: Request, res: Response) => {
   try {
@@ -102,3 +116,72 @@ export const deleteSchool = async (req: Request, res: Response) => {
 };
 
 //add log in and sign up functions
+//signup
+export const adminSignUp = async (req: Request, res: Response) => {
+  try {
+    let { firstName, lastName, email, password } = req.body;
+    let teacher = await Admin.create({
+      name: firstName + lastName,
+      email,
+      password,
+    });
+
+    const payload = {
+      user: {
+        id: teacher._id,
+      },
+    };
+
+    sign(
+      payload,
+      config.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      },
+      (err: any, token) => {
+        if (err) throw err;
+        res.status(200).json({ token, success: true });
+      }
+    );
+  } catch (error: any) {
+    console.error(error.message);
+    return res.status(500).send("Internal server error");
+  }
+};
+
+//login
+export const adminLogin = async (req: Request, res: Response) => {
+  try {
+    let { email, password } = req.body;
+
+    let teacher = await Admin.findOne({ email: email });
+
+    if (!teacher || !(await Password.compare(teacher.password, password))) {
+      return res
+        .status(400)
+        .json({ msg: "Invalid credentials", success: false });
+    }
+
+    const payload = {
+      id: teacher.id,
+    };
+    sign(
+      payload,
+      config.JWT_SECRET,
+      {
+        expiresIn: config.JWT_TOKEN_EXPIRES_IN,
+      },
+      (err, token) => {
+        if (err) throw err;
+
+        res.json({
+          token,
+          success: true,
+        });
+      }
+    );
+  } catch (error: any) {
+    console.error(error.message);
+    return res.status(500).send("Internal server error");
+  }
+};

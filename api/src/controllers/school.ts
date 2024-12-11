@@ -11,7 +11,9 @@ import { Password } from "../helpers/password";
 export const getTeachers = async (req: Request, res: Response) => {
   try {
     let school_id = req.user;
-    let teachers = await Teacher.find({ school_id: school_id });
+
+    let school = await School.findOne({ id: school_id });
+    let teachers = await Teacher.find({ school_id: school?.name });
 
     if (!teachers) {
       return res
@@ -62,8 +64,13 @@ export const deleteTeacher = async (req: Request, res: Response) => {
 //get students
 export const getStudents = async (req: Request, res: Response) => {
   try {
-    let school_id = req.user;
-    let students = await Student.find({ school_id: school_id });
+    let school_id = req.user.id;
+
+    let school = await School.findOne({ id: school_id });
+    console.log(school_id);
+
+    let students = await Student.find({ school_id: school?.name });
+    console.log(students);
 
     if (!students) {
       return res
@@ -121,6 +128,8 @@ export const schoolSignUp = async (req: Request, res: Response) => {
       password,
     });
 
+    console.log(school);
+
     const payload = {
       user: {
         id: school._id,
@@ -149,7 +158,9 @@ export const schoolLogin = async (req: Request, res: Response) => {
   try {
     let { name, password } = req.body;
 
-    let school = await Student.findOne({ name: name });
+    let school = await School.findOne({ name: name });
+
+    console.log(school);
 
     if (!school || !(await Password.compare(school.password, password))) {
       return res

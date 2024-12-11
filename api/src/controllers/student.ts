@@ -9,7 +9,9 @@ import { config } from "../config/config";
 
 export const getBooksStudent = async (req: Request, res: Response) => {
   try {
-    let books = await Book.find({ is_guide: false });
+    let books = await Book.find({});
+
+    console.log(books);
 
     if (!books) {
       return res.status(404).json({ success: false, msg: " No books found" });
@@ -38,7 +40,7 @@ export const getBookStudent = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, msg: " No book found" });
     }
 
-    const filePath = path.join(__dirname, book.url);
+    const filePath = path.join(__dirname, book.filepath);
     return res.download(filePath, book.name, (err) => {
       if (err) {
         console.error("File download error:", err);
@@ -54,11 +56,11 @@ export const getBookStudent = async (req: Request, res: Response) => {
 //signup
 export const studentSignUp = async (req: Request, res: Response) => {
   try {
-    let { name, adm_no, password, school_id } = req.body;
+    let { firstName, lastName, adm_no, password, school } = req.body;
     let student = await Student.create({
-      name,
+      name: firstName + lastName,
       adm_no,
-      school_id,
+      school_id: school,
       password,
     });
 

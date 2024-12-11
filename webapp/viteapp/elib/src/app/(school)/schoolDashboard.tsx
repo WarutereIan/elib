@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,15 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 
 const SchoolManagement = () => {
-  const [teachers, setTeachers] = useState([
-    { id: "001", name: "Brett Josh", tscNumber: "123456" },
-    { id: "002", name: "Tiffany Ashley", tscNumber: "789012" },
-    { id: "003", name: "Jenn Naliaka", tscNumber: "345678" },
-    { id: "004", name: "Steve Kinuthia", tscNumber: "567890" },
-    { id: "005", name: "Amari Hassan", tscNumber: "456789" },
-  ]);
+  const [teachers, setTeachers] = useState<any[]>([]);
 
   const [editTeacher, setEditTeacher] = useState(null);
   const [newTeacher, setNewTeacher] = useState({
@@ -27,6 +22,53 @@ const SchoolManagement = () => {
     name: "",
     tscNumber: "",
   });
+
+  const [students, setstudents] = useState<any[]>([]);
+
+  //getStudents
+  let urlStudents = "http://localhost:5000/user/getStudents";
+  const token = localStorage.getItem("sch_token");
+
+  console.log("token", token);
+
+  const getstudents = async () => {
+    try {
+      const response = await axios.get(urlStudents, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      setstudents(response.data.students);
+
+      return response.data.students;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  let urlTeachers = "http://localhost:5000/user/getTeachers";
+
+  const getTeachers = async () => {
+    try {
+      const response = await axios.get(urlTeachers, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      setTeachers(response.data.teachers);
+
+      return response.data.teachers;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getstudents().then();
+    getTeachers().then();
+  }, []);
 
   const handleDelete = (teacherId) => {
     if (confirm("Are you sure you want to delete this teacher?")) {
@@ -86,47 +128,6 @@ const SchoolManagement = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Teachers</CardTitle>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-blue-500 hover:bg-blue-600">
-                  <Plus className="mr-2 h-4 w-4" /> Add Teacher
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Teacher</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Input
-                    placeholder="Teacher ID"
-                    value={newTeacher.id}
-                    onChange={(e) =>
-                      setNewTeacher({ ...newTeacher, id: e.target.value })
-                    }
-                  />
-                  <Input
-                    placeholder="Name"
-                    value={newTeacher.name}
-                    onChange={(e) =>
-                      setNewTeacher({ ...newTeacher, name: e.target.value })
-                    }
-                  />
-                  <Input
-                    placeholder="TSC Number"
-                    value={newTeacher.tscNumber}
-                    onChange={(e) =>
-                      setNewTeacher({
-                        ...newTeacher,
-                        tscNumber: e.target.value,
-                      })
-                    }
-                  />
-                  <DialogClose asChild>
-                    <Button onClick={handleAdd}>Add Teacher</Button>
-                  </DialogClose>
-                </div>
-              </DialogContent>
-            </Dialog>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -142,22 +143,54 @@ const SchoolManagement = () => {
                 <tbody>
                   {teachers.map((teacher) => (
                     <tr key={teacher.id} className="border-t">
-                      <td className="p-4">{teacher.id}</td>
+                      <td className="p-4">{teacher._id}</td>
                       <td className="p-4">{teacher.name}</td>
-                      <td className="p-4">{teacher.tscNumber}</td>
+                      <td className="p-4">{teacher.tsc_no}</td>
+                      <td className="p-4">
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => handleDelete(teacher.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-5">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Students</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-4 text-left">Student ID</th>
+                    <th className="p-4 text-left">Name</th>
+                    <th className="p-4 text-left">Adm Number</th>
+                    <th className="p-4 text-left">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((teacher) => (
+                    <tr key={teacher.id} className="border-t">
+                      <td className="p-4">{teacher._id}</td>
+                      <td className="p-4">{teacher.name}</td>
+                      <td className="p-4">{teacher.adm_no}</td>
                       <td className="p-4">
                         <div className="flex gap-2">
                           <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="text-blue-500 hover:text-blue-700"
-                                onClick={() => handleEdit(teacher)}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                            </DialogTrigger>
+                            <DialogTrigger asChild></DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
                                 <DialogTitle>Edit Teacher</DialogTitle>

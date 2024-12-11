@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const TeacherSignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -71,12 +72,28 @@ const TeacherSignUpPage = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       // Handle registration logic here
-      console.log("Registration attempted with:", formData);
-      navigate("/home");
+      const url = "http://localhost:5000/user/school-signup";
+
+      try {
+        const signupRequest = {
+          method: "post",
+          data: formData,
+          url: url,
+        };
+
+        const response = await axios(signupRequest);
+        console.log(response.data);
+        //store token in local stoage
+        localStorage.setItem("token", response.data.token);
+        navigate("/home");
+      } catch (error: any) {
+        console.log(error);
+        alert(error.response.data.msg);
+      }
     }
   };
 

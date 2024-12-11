@@ -1,17 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Button } from "./ui/button";
+import { log } from "console";
 
 // Categories to match backend
-const BOOK_CATEGORIES = [
-  "Fiction",
-  "Non-Fiction",
-  "Science",
-  "History",
-  "Technology",
-  "Art",
-  "Philosophy",
-];
+const BOOK_CATEGORIES = ["Sciences", "Mathematics", "Languages"];
 
 const BookUploader = () => {
   const [bookFile, setBookFile] = useState(null);
@@ -30,21 +23,22 @@ const BookUploader = () => {
     event.preventDefault(); // Prevent default form submission
 
     // Validate all fields
-    if (!bookFile || !bookName || !category || !subject) {
+    if (!bookFile || !bookName || !category) {
       setUploadStatus("Please fill in all book details");
       return;
     }
 
     const formData = new FormData();
-    formData.append("book", bookFile);
+    formData.append("file", bookFile);
     formData.append("bookName", bookName);
     formData.append("category", category);
-    formData.append("subject", subject);
+
+    console.log(formData.entries());
 
     try {
-      setUploadStatus("Uploading...");
+      setUploadStatus("");
       const response = await axios.post(
-        "http://localhost:5000/upload-book",
+        "http://localhost:5000/admin/upload-book",
         formData,
         {
           headers: {
@@ -59,7 +53,9 @@ const BookUploader = () => {
         }
       );
 
-      setUploadStatus(`Upload successful: ${response.data.book.bookName}`);
+      console.log(response);
+
+      setUploadStatus(`${response.data.message}`);
       setUploadProgress(100);
 
       // Reset form
@@ -69,6 +65,8 @@ const BookUploader = () => {
       setSubject("");
       event.target.reset(); // Reset file input
     } catch (error) {
+      console.log(error);
+
       setUploadStatus(
         `Upload failed: ${error.response?.data?.message || "Unknown error"}`
       );
@@ -117,7 +115,7 @@ const BookUploader = () => {
 
       <Button
         type="submit"
-        disabled={!bookFile || !bookName || !category || !subject}
+        disabled={!bookFile || !bookName || !category}
         className="mt-2"
       >
         Upload Book
