@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { usePDF } from "react-to-pdf";
+import PaymentManagement from "../../components/PaymentManagement";
 
 const SchoolManagement = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -142,6 +143,7 @@ const SchoolManagement = () => {
   const { toPDF: pdfGenStudents, targetRef: targetRefStudents } = usePDF({
     filename: "exported-data-students.pdf",
   });
+  
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -310,6 +312,8 @@ const SchoolManagement = () => {
             </div>
           </CardContent>
         </Card>
+
+        <PaymentManagement />
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import { connect } from "mongoose";
 import { config } from "./config";
 
+("0ztN4ndOoM1H9Jri");
+
 export const connectDB = async () => {
   console.log(`- - -`.repeat(10));
   try {
@@ -10,7 +12,10 @@ export const connectDB = async () => {
       connectTimeoutMS: 60000,
       socketTimeoutMS: 60000,
     };
-    const db = await connect("mongodb://localhost:27017", options);
+    const db = await connect(
+      "mongodb+srv://nmwanik111:0ztN4ndOoM1H9Jri@cluster0.nqu7tdp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+      options
+    );
     console.log("Connected to MongoDB ✅✅✅");
     return db;
   } catch (err: any) {

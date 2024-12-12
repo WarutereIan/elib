@@ -79,7 +79,7 @@ const SchoolSignUpPage = () => {
         const response = await axios(signupRequest);
         console.log(response.data);
         //store token in local stoage
-        localStorage.setItem("school_token", response.data.token);
+        localStorage.setItem("sch_token", response.data.token);
         navigate("/school/dashboard");
       } catch (error: any) {
         console.log(error);

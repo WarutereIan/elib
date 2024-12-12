@@ -7,4 +7,5 @@ export interface ISchool {
   password: string;
   email: string;
   has_paid: boolean;
+  subscription: any;
 }

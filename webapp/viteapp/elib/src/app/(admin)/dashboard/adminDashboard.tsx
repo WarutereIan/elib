@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Pen, Trash2, BookOpen, School, Plus } from "lucide-react";
 import FileUploader from "../../../components/fileUploader";
 import axios from "axios";
+import PaymentManagement from "../../../components/admin/PaymentManagement";
+import SubscriptionManagement from "../../../components/admin/SubscriptionManagement";
 
 const AdminDashboard = () => {
   const [schools, setSchools] = useState<any[]>([]);
@@ -270,6 +272,8 @@ const AdminDashboard = () => {
             </Table>
           </div>
         </main>
+        <PaymentManagement />
+        <SubscriptionManagement />
       </div>
     </div>
   );
